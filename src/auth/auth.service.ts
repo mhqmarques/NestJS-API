@@ -5,6 +5,7 @@ import { AuthDto } from './dto';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Payload } from './strategy';
 
 export interface AuthResponse {
   access_token: string;
@@ -61,7 +62,7 @@ export class AuthService {
     userId: number,
     email: string,
   ): Promise<AuthResponse> {
-    const payload = {
+    const payload: Payload = {
       sub: userId,
       email,
     };
