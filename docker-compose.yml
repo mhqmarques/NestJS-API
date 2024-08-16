@@ -10,9 +10,10 @@ services:
       POSTGRES_DB: nest
   test-db:
     image: postgres:latest
+    container_name: test_nest_postgres
     ports:
       - 5435:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: nest
+      POSTGRES_DB: nest_test
