@@ -1,9 +1,11 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { User } from '@prisma/client';
 import * as pactum from 'pactum';
 import { AppModule } from 'src/app.module';
 import { AuthDto } from 'src/auth/dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { EditUserDto } from 'src/user/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -102,7 +104,44 @@ describe('App e2e', () => {
     });
   });
 
-  describe('User', () => {});
+  describe('User', () => {
+    const defaultUser: Partial<User> = {
+      email: 'email@email.com',
+    };
+    const editUserDto: EditUserDto = {
+      firstName: 'Marlon',
+      email: 'email2@email.co',
+    };
+    describe('user/me', () => {
+      it('should get a user object and status code 200', () => {
+        return pactum
+          .spec()
+          .get('/users/me')
+          .withBearerToken('$S{userAt}')
+          .expectStatus(200)
+          .expectBodyContains(defaultUser.email);
+      });
+      it('should throw unauthorized error if access_toker was not prived', () => {
+        return pactum.spec().get('/users/me').expectStatus(401);
+      });
+    });
+
+    describe('edit user', () => {
+      it('should get edited user and status code 200', () => {
+        return pactum
+          .spec()
+          .patch('/users')
+          .withBody(editUserDto)
+          .withBearerToken('$S{userAt}')
+          .expectStatus(200)
+          .expectBodyContains(editUserDto.firstName)
+          .expectBodyContains(editUserDto.email);
+      });
+      it('should throw unauthorized error if access_toker was not prived', () => {
+        return pactum.spec().patch('/users').expectStatus(401);
+      });
+    });
+  });
 
   describe('Bookmarks', () => {});
 });
