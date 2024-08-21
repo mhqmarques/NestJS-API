@@ -19,6 +19,8 @@ API project built using Nest.js to be used as portfolio.
   - Jest
   - Pactum
   - E2E
+- Documentation
+  - Swegger
 
 ## Set Up
 
@@ -36,28 +38,7 @@ $ npm run db:dev:restart // start postgres in docker and push migrations
 $ npm run start:dev // start api in dev mode
 ```
 
-## Running the app
+## API Documentation
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
+1. Start the application [ see `run commands`]
+2. In a browser access `http://localhost:3333/api`
