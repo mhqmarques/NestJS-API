@@ -13,6 +13,7 @@ API project built using Nest.js to be used as portfolio.
   - Nest Guard
 - Prisma ORM
 - PostgreSql
+- Validation
 - Docker and Docker Compose
 - Test
   - Jest

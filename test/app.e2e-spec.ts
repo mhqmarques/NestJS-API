@@ -1,9 +1,10 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { User } from '@prisma/client';
+import { Bookmark, User } from '@prisma/client';
 import * as pactum from 'pactum';
 import { AppModule } from 'src/app.module';
 import { AuthDto } from 'src/auth/dto';
+import { CreateBookmarkDto } from 'src/bookmark/dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { EditUserDto } from 'src/user/dto';
 
@@ -143,5 +144,91 @@ describe('App e2e', () => {
     });
   });
 
-  describe('Bookmarks', () => {});
+  describe('Bookmarks', () => {
+    const defaultCreateBookmarkDto: CreateBookmarkDto = {
+      title: 'Some title',
+      link: 'https://www.somelink.com',
+    };
+    const defaultEditBookmarkDto: CreateBookmarkDto = {
+      title: 'Some other title',
+      link: 'https://www.someotherlink.com',
+    };
+    describe('createBookmark', () => {
+      it('should create a bookmark for a given user and get status code 201', () => {
+        return pactum
+          .spec()
+          .post('/bookmarks')
+          .withBearerToken('$S{userAt}')
+          .withBody(defaultCreateBookmarkDto)
+          .stores('bookmarkId', 'id')
+          .expectStatus(201)
+          .expectBodyContains(defaultCreateBookmarkDto.title)
+          .expectBodyContains(defaultCreateBookmarkDto.link);
+      });
+      it('should throw if access token was not provided', () => {
+        return pactum.spec().post('/bookmarks').expectStatus(401);
+      });
+    });
+    describe('getBookmarks', () => {
+      it('should get a bookmark list for a given user and status code 200', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks')
+          .withBearerToken('$S{userAt}')
+          .expectStatus(200)
+          .expectJsonLength(1);
+      });
+      it('should throw if access token was not provided', () => {
+        return pactum.spec().get('/bookmarks').expectStatus(401);
+      });
+    });
+    describe('getBookmarkById', () => {
+      it('should get a bookmark for a given bookmarkId and userId and get status code 200', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks/{id}')
+          .withBearerToken('$S{userAt}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .expectStatus(200)
+          .expectBodyContains(defaultCreateBookmarkDto.title)
+          .expectBodyContains(defaultCreateBookmarkDto.link);
+      });
+      it('should throw if access token was not provided', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks/$S{bookmarkId}')
+          .expectStatus(401);
+      });
+    });
+    describe('editBookmarkById', () => {
+      it('should edit bookmark for a given bookmarkId and userId and get status code 200', () => {
+        return pactum
+          .spec()
+          .patch('/bookmarks/{id}')
+          .withBearerToken('$S{userAt}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .expectStatus(200)
+          .withBody(defaultEditBookmarkDto)
+          .expectBodyContains(defaultEditBookmarkDto.title)
+          .expectBodyContains(defaultEditBookmarkDto.link);
+      });
+      it('should throw if access token was not provided', () => {
+        return pactum
+          .spec()
+          .get('/bookmarks/$S{bookmarkId}')
+          .expectStatus(401);
+      });
+    });
+
+    describe('deleteBookmarkById', () => {
+      it('should delete a bookmark for a given bookmarkId and userId and get status code 200', () => {
+        return pactum
+          .spec()
+          .delete('/bookmarks/{id}')
+          .withBearerToken('$S{userAt}')
+          .withPathParams('id', '$S{bookmarkId}')
+          .expectStatus(204);
+      });
+    });
+  });
 });
