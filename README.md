@@ -20,7 +20,7 @@ API project built using Nest.js to be used as portfolio.
   - Pactum
   - E2E
 - Documentation
-  - Swegger
+  - Swagger
 
 ## Set Up
 
